@@ -433,7 +433,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
             <img 
-              src={`${window.location.origin}/zevora-logo-v3.png`} 
+              src="/zevora-logo-v3.png" 
               alt="Zevora Logo" 
               width="40"
               height="40"
