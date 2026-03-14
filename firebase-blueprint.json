@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "Prompt": {
+      "title": "Prompt",
+      "description": "A prompt template shared by a user.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The title of the prompt." },
+        "description": { "type": "string", "description": "A short summary of what the prompt does." },
+        "content": { "type": "string", "description": "The actual prompt text." },
+        "category": { "type": "string", "description": "The category this prompt belongs to." },
+        "tags": { "type": "array", "items": { "type": "string" }, "description": "Keywords for searching." },
+        "tier": { "type": "string", "enum": ["free", "pro"], "description": "Access level required." },
+        "is_public": { "type": "boolean", "description": "Whether the prompt is visible to everyone." },
+        "author_id": { "type": "string", "description": "The UID of the user who created it." },
+        "created_at": { "type": "string", "format": "date-time", "description": "ISO timestamp of creation." },
+        "slug": { "type": "string", "description": "URL-friendly version of the title." },
+        "rating_count": { "type": "integer", "description": "Number of upvotes/ratings." }
+      },
+      "required": ["title", "content", "category", "author_id", "created_at", "slug"]
+    },
+    "Favorite": {
+      "title": "Favorite",
+      "description": "A prompt favorited by a user.",
+      "type": "object",
+      "properties": {
+        "prompt_id": { "type": "string", "description": "The ID of the favorited prompt." },
+        "created_at": { "type": "string", "format": "date-time", "description": "ISO timestamp of when it was favorited." }
+      },
+      "required": ["prompt_id", "created_at"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Public and private information about a user.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "is_pro": { "type": "boolean", "description": "Subscription status." },
+        "full_name": { "type": "string" },
+        "avatar_url": { "type": "string", "format": "uri" },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "User permissions level." }
+      },
+      "required": ["email", "is_pro", "role"]
+    }
+  },
+  "firestore": {
+    "/prompts/{promptId}": {
+      "schema": "Prompt",
+      "description": "Collection of all prompts."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and settings."
+    },
+    "/users/{userId}/favorites/{promptId}": {
+      "schema": "Favorite",
+      "description": "A user's favorited prompts."
+    }
+  }
+}
