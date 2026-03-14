@@ -51,8 +51,20 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, isActive, isFavo
         {prompt.description}
       </p>
       
-      <div className="mt-auto pt-2 flex items-center gap-2">
+      <div className="mt-auto pt-2 flex items-center justify-between">
         <span className="pill">#{prompt.category}</span>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText(prompt.content);
+            window.open('https://aistudio.google.com/app/prompts/new_chat', '_blank');
+          }}
+          className="p-1.5 text-accent hover:bg-accent/10 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider"
+          title="Test in Gemini AI Studio"
+        >
+          <Zap size={12} fill="currentColor" />
+          <span>Test</span>
+        </button>
       </div>
 
       <div className="hover-preview">

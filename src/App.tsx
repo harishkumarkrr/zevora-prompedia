@@ -8,7 +8,7 @@ import { BulkUploadModal } from './components/BulkUploadModal';
 import { LegalModal } from './components/LegalModal';
 import { Prompt } from './types';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, ExternalLink, X, Star, MessageSquare, Heart } from 'lucide-react';
+import { Copy, Check, ExternalLink, X, Star, MessageSquare, Heart, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORY_GROUPS } from './constants';
 import { db, auth } from './firebase';
@@ -397,9 +397,10 @@ export default function App() {
                     handleCopy(selectedPrompt.content);
                     window.open('https://aistudio.google.com/app/prompts/new_chat', '_blank');
                   }}
-                  className="chip active px-6 py-2 flex items-center gap-2"
+                  className="chip active px-6 py-2 flex items-center gap-2 bg-accent text-white hover:bg-accent-hover"
                 >
-                  <span>Use in AI</span>
+                  <Zap size={16} fill="currentColor" />
+                  <span>Test in Gemini AI Studio</span>
                   <ExternalLink size={16} />
                 </button>
               </div>
@@ -428,7 +429,7 @@ export default function App() {
       <footer className="mt-20 py-12 border-t border-border bg-panel">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold font-display">Z</div>
+            <img src="/logo.png" alt="Zevora Logo" className="w-10 h-10 object-contain" referrerPolicy="no-referrer" />
             <span className="font-display font-bold text-xl tracking-tight">zevora</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-text-muted">
