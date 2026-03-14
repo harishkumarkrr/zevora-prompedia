@@ -1,8 +1,8 @@
-import React from 'react';
-import { CATEGORY_GROUPS } from '../constants';
-import { ChevronDown, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, Search } from 'lucide-react';
 
 interface CategorySidebarProps {
+  categories: string[];
   selectedCategory: string | null;
   onSelectCategory: (category: string | null) => void;
   showFavoritesOnly?: boolean;
@@ -11,25 +11,39 @@ interface CategorySidebarProps {
 }
 
 export const CategorySidebar: React.FC<CategorySidebarProps> = ({ 
+  categories,
   selectedCategory, 
   onSelectCategory,
   showFavoritesOnly,
   onToggleFavorites,
   user
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredCategories = categories.filter(cat => 
+    cat.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="sidebar">
       <div className="panel">
         <div className="panel-header">
           <h2>Categories</h2>
-          <button 
-            className="text-xs text-accent font-bold"
-            onClick={() => onSelectCategory(null)}
-          >
-            Clear
-          </button>
         </div>
         
+        <div className="px-4 pb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+            <input 
+              type="text"
+              placeholder="Filter categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 bg-bg-2 rounded-lg text-sm border border-border focus:border-accent outline-none transition-colors"
+            />
+          </div>
+        </div>
+
         {user && onToggleFavorites && (
           <div className="px-4 pb-4 border-b border-border mb-4">
             <button
@@ -46,25 +60,21 @@ export const CategorySidebar: React.FC<CategorySidebarProps> = ({
           </div>
         )}
 
-        <div className="category-groups">
-          {CATEGORY_GROUPS.map((group) => (
-            <details key={group.name} className="category-group" open>
-              <summary>
-                <span>{group.name}</span>
-                <ChevronDown size={14} className="group-caret" />
-              </summary>
-              <div className="category-list">
-                {group.categories.map((cat) => (
-                  <button
-                    key={cat}
-                    className={`category-item ${selectedCategory === cat ? 'active' : ''}`}
-                    onClick={() => onSelectCategory(cat)}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </details>
+        <div className="category-list p-4 flex flex-col gap-1">
+          <button
+            className={`category-item text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === null ? 'bg-accent-soft text-accent' : 'hover:bg-bg-2 text-text-muted'}`}
+            onClick={() => onSelectCategory(null)}
+          >
+            All
+          </button>
+          {filteredCategories.map((cat) => (
+            <button
+              key={cat}
+              className={`category-item text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === cat ? 'bg-accent-soft text-accent' : 'hover:bg-bg-2 text-text-muted'}`}
+              onClick={() => onSelectCategory(cat)}
+            >
+              {cat}
+            </button>
           ))}
         </div>
       </div>

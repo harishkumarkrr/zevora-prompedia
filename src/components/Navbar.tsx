@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, User, Zap, Database, LogOut, Library, Trash2, Upload, Sparkles } from 'lucide-react';
-import { migrateData } from '../migrate';
-import { removePlaceholderPrompts, cleanDuplicates, seedDatabase } from '../seedData';
+import { Search, Plus, User, Zap, LogOut, Upload } from 'lucide-react';
 
 interface NavbarProps {
   searchQuery: string;
@@ -14,86 +12,13 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onAuthClick, onSignOut, onSubmitClick, onBulkUploadClick, user }) => {
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
-  const [isCleaning, setIsCleaning] = useState(false);
-  const [isSeedingData, setIsSeedingData] = useState(false);
-  const [migrationStatus, setMigrationStatus] = useState<string | null>(null);
   const isAdmin = user?.email?.toLowerCase() === 'harishkumarkrr.t@gmail.com';
-
-  const handleSeedData = async () => {
-    setIsSeedingData(true);
-    setMigrationStatus('Seeding data...');
-    try {
-      const count = await seedDatabase();
-      setMigrationStatus(`Successfully seeded ${count} prompts!`);
-      setTimeout(() => setMigrationStatus(null), 10000);
-    } catch (error) {
-      setMigrationStatus('Seeding failed.');
-      console.error('Seeding error:', error);
-    } finally {
-      setIsSeedingData(false);
-    }
-  };
-
-  const handleMigrate = async () => {
-    setIsMigrating(true);
-    setMigrationStatus('Starting migration...');
-    try {
-      const count = await migrateData();
-      setMigrationStatus(`Successfully migrated ${count} prompts!`);
-      setTimeout(() => setMigrationStatus(null), 10000);
-    } catch (error) {
-      setMigrationStatus(error instanceof Error ? error.message : 'Migration failed.');
-      console.error('Migration error:', error);
-    } finally {
-      setIsMigrating(false);
-    }
-  };
-
-  const handleCleanPlaceholders = async () => {
-    setIsSeeding(true);
-    setMigrationStatus('Cleaning placeholders...');
-    try {
-      const count = await removePlaceholderPrompts();
-      setMigrationStatus(`Successfully deleted ${count} placeholders!`);
-      setTimeout(() => setMigrationStatus(null), 10000);
-    } catch (error) {
-      setMigrationStatus('Cleanup failed.');
-      console.error('Cleanup error:', error);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
-  const handleClean = async () => {
-    setIsCleaning(true);
-    setMigrationStatus('Cleaning duplicates...');
-    console.log('Starting duplicate cleanup process...');
-    try {
-      const count = await cleanDuplicates();
-      console.log(`Cleanup successful. Deleted ${count} duplicates.`);
-      setMigrationStatus(`Successfully deleted ${count} duplicates!`);
-      setTimeout(() => setMigrationStatus(null), 10000);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Cleanup failed.';
-      setMigrationStatus(message);
-      console.error('Cleanup error:', error);
-    } finally {
-      setIsCleaning(false);
-    }
-  };
 
   return (
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
           <div className="brand-name compact">zevora</div>
-          {migrationStatus && (
-            <div className="ml-4 px-3 py-1 rounded-lg bg-accent/10 text-accent text-xs font-bold animate-pulse">
-              {migrationStatus}
-            </div>
-          )}
         </div>
 
         <div className="topbar-search">
@@ -109,42 +34,6 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
         <div className="topbar-actions">
           {isAdmin && (
             <div className="flex items-center gap-2">
-              <button 
-                onClick={handleMigrate}
-                disabled={isMigrating}
-                className="chip flex items-center gap-2 bg-amber-50 border-amber-200 text-amber-700"
-                title="Migrate from Supabase"
-              >
-                <Database size={16} />
-                <span>{isMigrating ? 'Migrating...' : 'Migrate'}</span>
-              </button>
-              <button 
-                onClick={handleCleanPlaceholders}
-                disabled={isSeeding}
-                className="chip flex items-center gap-2 bg-emerald-50 border-emerald-200 text-emerald-700"
-                title="Remove Placeholder Prompts"
-              >
-                <Library size={16} />
-                <span>{isSeeding ? 'Cleaning...' : 'Clean Placeholders'}</span>
-              </button>
-              <button 
-                onClick={handleClean}
-                disabled={isCleaning}
-                className="chip flex items-center gap-2 bg-rose-50 border-rose-200 text-rose-700"
-                title="Remove Duplicate Prompts"
-              >
-                <Trash2 size={16} />
-                <span>{isCleaning ? 'Cleaning...' : 'Clean Duplicates'}</span>
-              </button>
-              <button 
-                onClick={handleSeedData}
-                disabled={isSeedingData}
-                className="chip flex items-center gap-2 bg-cyan-50 border-cyan-200 text-cyan-700"
-                title="Seed Initial Data"
-              >
-                <Sparkles size={16} />
-                <span>{isSeedingData ? 'Seeding...' : 'Seed Data'}</span>
-              </button>
               <button 
                 onClick={onBulkUploadClick}
                 className="chip flex items-center gap-2 bg-indigo-50 border-indigo-200 text-indigo-700"

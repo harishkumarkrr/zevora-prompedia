@@ -129,6 +129,11 @@ export default function App() {
     return () => unsubscribe();
   }, [user]);
 
+  const uniqueCategories = useMemo(() => {
+    const cats = new Set(prompts.map(p => p.category));
+    return Array.from(cats).sort();
+  }, [prompts]);
+
   const filteredPrompts = useMemo(() => {
     return prompts.filter(p => {
       const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -187,6 +192,7 @@ export default function App() {
 
         <div className="layout-grid" id="prompt-library">
           <CategorySidebar 
+            categories={uniqueCategories}
             selectedCategory={selectedCategory} 
             onSelectCategory={setSelectedCategory} 
             showFavoritesOnly={showFavoritesOnly}
