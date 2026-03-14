@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Search, Plus, User, Zap, Database, LogOut, Library, Trash2, Upload, Sparkles } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { migrateData } from '../migrate';
 import { removePlaceholderPrompts, cleanDuplicates, seedDatabase } from '../seedData';
 
@@ -89,14 +88,13 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
-          <div className="relative w-8 h-8 flex items-center justify-center">
-            <img 
-              src={logo} 
-              alt="Zevora Logo" 
-              className="w-full h-full object-contain" 
-              referrerPolicy="no-referrer" 
-            />
-          </div>
+          <img 
+            src="/brand-logo.png" 
+            alt="Zevora Logo" 
+            width="32"
+            height="32"
+            className="object-contain" 
+          />
           <div className="brand-name compact">zevora</div>
           {migrationStatus && (
             <div className="ml-4 px-3 py-1 rounded-lg bg-accent/10 text-accent text-xs font-bold animate-pulse">

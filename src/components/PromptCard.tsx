@@ -60,10 +60,10 @@ export const PromptCard: React.FC<PromptCardProps> = ({ prompt, isActive, isFavo
             window.open('https://aistudio.google.com/app/prompts/new_chat', '_blank');
           }}
           className="p-1.5 text-accent hover:bg-accent/10 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider"
-          title="Test in Gemini AI Studio"
+          title="Try it in Gemini AI Studio"
         >
           <Zap size={12} fill="currentColor" />
-          <span>Test</span>
+          <span>Try it</span>
         </button>
       </div>
 
