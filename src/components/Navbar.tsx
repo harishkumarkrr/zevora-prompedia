@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
           <img 
-            src="/brand-logo.png" 
+            src="/zevora-logo-v3.png" 
             alt="Zevora Logo" 
             width="32"
             height="32"
