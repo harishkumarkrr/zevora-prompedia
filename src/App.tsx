@@ -432,13 +432,6 @@ export default function App() {
       <footer className="mt-20 py-12 border-t border-border bg-panel">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <img 
-              src="/zevora-logo-v3.png" 
-              alt="Zevora Logo" 
-              width="40"
-              height="40"
-              className="object-contain" 
-            />
             <span className="font-display font-bold text-xl tracking-tight">zevora</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-text-muted">

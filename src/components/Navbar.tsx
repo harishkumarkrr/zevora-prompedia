@@ -88,13 +88,6 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
-          <img 
-            src="/zevora-logo-v3.png" 
-            alt="Zevora Logo" 
-            width="32"
-            height="32"
-            className="object-contain" 
-          />
           <div className="brand-name compact">zevora</div>
           {migrationStatus && (
             <div className="ml-4 px-3 py-1 rounded-lg bg-accent/10 text-accent text-xs font-bold animate-pulse">
