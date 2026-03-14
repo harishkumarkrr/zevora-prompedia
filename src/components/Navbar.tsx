@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search, Plus, User, Zap, Database, LogOut, Library, Trash2, Upload } from 'lucide-react';
+import { Search, Plus, User, Zap, Database, LogOut, Library, Trash2, Upload, Sparkles } from 'lucide-react';
 import { migrateData } from '../migrate';
-import { removePlaceholderPrompts, cleanDuplicates } from '../seedData';
+import { removePlaceholderPrompts, cleanDuplicates, seedDatabase } from '../seedData';
 
 interface NavbarProps {
   searchQuery: string;
@@ -17,8 +17,24 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
   const [isMigrating, setIsMigrating] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
+  const [isSeedingData, setIsSeedingData] = useState(false);
   const [migrationStatus, setMigrationStatus] = useState<string | null>(null);
   const isAdmin = user?.email?.toLowerCase() === 'harishkumarkrr.t@gmail.com';
+
+  const handleSeedData = async () => {
+    setIsSeedingData(true);
+    setMigrationStatus('Seeding data...');
+    try {
+      const count = await seedDatabase();
+      setMigrationStatus(`Successfully seeded ${count} prompts!`);
+      setTimeout(() => setMigrationStatus(null), 10000);
+    } catch (error) {
+      setMigrationStatus('Seeding failed.');
+      console.error('Seeding error:', error);
+    } finally {
+      setIsSeedingData(false);
+    }
+  };
 
   const handleMigrate = async () => {
     setIsMigrating(true);
@@ -72,7 +88,15 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Zevora Logo" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" />
+          <img 
+            src="/logo.png" 
+            alt="Zevora Logo" 
+            className="w-8 h-8 object-contain" 
+            referrerPolicy="no-referrer" 
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
           <div className="brand-name compact">zevora</div>
           {migrationStatus && (
             <div className="ml-4 px-3 py-1 rounded-lg bg-accent/10 text-accent text-xs font-bold animate-pulse">
@@ -120,6 +144,15 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
               >
                 <Trash2 size={16} />
                 <span>{isCleaning ? 'Cleaning...' : 'Clean Duplicates'}</span>
+              </button>
+              <button 
+                onClick={handleSeedData}
+                disabled={isSeedingData}
+                className="chip flex items-center gap-2 bg-cyan-50 border-cyan-200 text-cyan-700"
+                title="Seed Initial Data"
+              >
+                <Sparkles size={16} />
+                <span>{isSeedingData ? 'Seeding...' : 'Seed Data'}</span>
               </button>
               <button 
                 onClick={onBulkUploadClick}

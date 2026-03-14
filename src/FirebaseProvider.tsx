@@ -17,7 +17,9 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Initializing Auth listener...');
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      console.log('Auth state changed:', authUser ? 'User logged in' : 'No user');
       if (authUser) {
         // Only consider user "logged in" if email is verified
         if (!authUser.emailVerified) {

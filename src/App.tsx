@@ -95,6 +95,7 @@ export default function App() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log(`Fetched ${snapshot.docs.length} prompts`);
       const fetchedPrompts = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -102,7 +103,9 @@ export default function App() {
       setPrompts(fetchedPrompts);
       setLoading(false);
     }, (error) => {
+      console.error('Error fetching prompts:', error);
       handleFirestoreError(error, OperationType.LIST, 'prompts');
+      setLoading(false); // Ensure loading is turned off even on error
     });
 
     return () => unsubscribe();
@@ -429,7 +432,15 @@ export default function App() {
       <footer className="mt-20 py-12 border-t border-border bg-panel">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Zevora Logo" className="w-10 h-10 object-contain" referrerPolicy="no-referrer" />
+            <img 
+              src="/logo.png" 
+              alt="Zevora Logo" 
+              className="w-10 h-10 object-contain" 
+              referrerPolicy="no-referrer" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
             <span className="font-display font-bold text-xl tracking-tight">zevora</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-text-muted">
