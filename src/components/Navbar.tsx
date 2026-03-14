@@ -94,6 +94,7 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
             width="32"
             height="32"
             className="object-contain" 
+            onError={(e) => e.currentTarget.src = 'https://picsum.photos/seed/zevora/40/40'}
           />
           <div className="brand-name compact">zevora</div>
           {migrationStatus && (

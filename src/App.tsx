@@ -438,6 +438,7 @@ export default function App() {
               width="40"
               height="40"
               className="object-contain" 
+              onError={(e) => e.currentTarget.src = 'https://picsum.photos/seed/zevora/40/40'}
             />
             <span className="font-display font-bold text-xl tracking-tight">zevora</span>
           </div>
