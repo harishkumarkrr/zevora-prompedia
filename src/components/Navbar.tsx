@@ -88,15 +88,23 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
-          <img 
-            src="/logo.png" 
-            alt="Zevora Logo" 
-            className="w-8 h-8 object-contain" 
-            referrerPolicy="no-referrer" 
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
+          <div className="relative w-8 h-8 flex items-center justify-center">
+            <img 
+              src="logo.png" 
+              alt="Zevora Logo" 
+              className="w-full h-full object-contain" 
+              referrerPolicy="no-referrer" 
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.parentElement?.querySelector('.logo-fallback');
+                if (fallback) (fallback as HTMLElement).style.display = 'flex';
+              }}
+            />
+            <div className="logo-fallback hidden absolute inset-0 items-center justify-center bg-accent/10 rounded-lg">
+              <Sparkles className="text-accent" size={16} />
+            </div>
+          </div>
           <div className="brand-name compact">zevora</div>
           {migrationStatus && (
             <div className="ml-4 px-3 py-1 rounded-lg bg-accent/10 text-accent text-xs font-bold animate-pulse">

@@ -46,7 +46,8 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
          (request.auth.token.email == "harishkumarkrr.t@gmail.com" && request.auth.token.email_verified == true));
     }
 
@@ -55,7 +56,7 @@ service cloud.firestore {
     }
 
     function isValidUrl(url) {
-      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+      return url is string && (url == "" || url.matches("^https://.*") || url.matches("^http://.*"));
     }
 
     function hasOnlyAllowedFields(fields) {

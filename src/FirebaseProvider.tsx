@@ -33,16 +33,20 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
           const userDoc = await getDoc(userRef);
           if (!userDoc.exists()) {
+            console.log('Creating new user profile for:', authUser.uid);
             await setDoc(userRef, {
-              email: authUser.email,
+              email: authUser.email || '',
               is_pro: false,
               role: 'user',
               full_name: authUser.displayName || '',
               avatar_url: authUser.photoURL || ''
             });
+            console.log('User profile created successfully');
           }
         } catch (error) {
           console.error('Error ensuring user profile:', error);
+          // If it's a permission error, it might be because the doc already exists 
+          // but the user can't read it yet (race condition), or rules are still propagating.
         }
       }
       setUser(authUser);

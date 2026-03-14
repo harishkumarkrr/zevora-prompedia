@@ -8,7 +8,7 @@ import { BulkUploadModal } from './components/BulkUploadModal';
 import { LegalModal } from './components/LegalModal';
 import { Prompt } from './types';
 import ReactMarkdown from 'react-markdown';
-import { Copy, Check, ExternalLink, X, Star, MessageSquare, Heart, Zap } from 'lucide-react';
+import { Copy, Check, ExternalLink, X, Star, MessageSquare, Heart, Zap, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORY_GROUPS } from './constants';
 import { db, auth } from './firebase';
@@ -432,15 +432,23 @@ export default function App() {
       <footer className="mt-20 py-12 border-t border-border bg-panel">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
-            <img 
-              src="/logo.png" 
-              alt="Zevora Logo" 
-              className="w-10 h-10 object-contain" 
-              referrerPolicy="no-referrer" 
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
+            <div className="relative w-10 h-10 flex items-center justify-center">
+              <img 
+                src="logo.png" 
+                alt="Zevora Logo" 
+                className="w-full h-full object-contain" 
+                referrerPolicy="no-referrer" 
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.parentElement?.querySelector('.logo-fallback');
+                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                }}
+              />
+              <div className="logo-fallback hidden absolute inset-0 items-center justify-center bg-accent/10 rounded-xl">
+                <Sparkles className="text-accent" size={20} />
+              </div>
+            </div>
             <span className="font-display font-bold text-xl tracking-tight">zevora</span>
           </div>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-text-muted">
