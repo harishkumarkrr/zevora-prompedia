@@ -45,25 +45,6 @@ export const Hero: React.FC<HeroProps> = ({ onBrowseClick }) => {
       </div>
       
       <div className="hidden lg:flex flex-col items-end gap-1">
-        <div className="panel w-52 rotate-2 transform hover:rotate-0 transition-transform p-2">
-          <div className="flex items-center gap-1 mb-1">
-            <Zap size={16} className="text-accent" fill="currentColor" />
-            <span className="text-xs font-bold uppercase tracking-wider">Pro Tip</span>
-          </div>
-          <p className="text-xs text-text-muted">
-            Use specific personas in your prompts to get more tailored responses from AI.
-          </p>
-        </div>
-        
-        <div className="panel w-52 -rotate-1 transform hover:rotate-0 transition-transform p-2">
-          <div className="flex items-center gap-1 mb-1">
-            <Zap size={16} className="text-accent" fill="currentColor" />
-            <span className="text-xs font-bold uppercase tracking-wider">New</span>
-          </div>
-          <p className="text-xs text-text-muted">
-            Community ratings are now live! Upvote your favorite prompts.
-          </p>
-        </div>
       </div>
     </div>
   );

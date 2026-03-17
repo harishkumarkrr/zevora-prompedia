@@ -54,14 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
             <span>Submit</span>
           </button>
           
-          <button 
-            className="chip flex items-center gap-2 opacity-50 cursor-not-allowed"
-            title="Coming Soon"
-          >
-            <Zap size={16} className="text-accent" fill="currentColor" />
-            <span>Community</span>
-          </button>
-          
           {user ? (
             <div className="relative group">
               <div className="flex items-center gap-3 cursor-pointer">
