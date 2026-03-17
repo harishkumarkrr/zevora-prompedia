@@ -12,7 +12,7 @@ import { Copy, Check, ExternalLink, X, Star, MessageSquare, Heart, Zap, Sparkles
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORY_GROUPS } from './constants';
 import { db, auth } from './firebase';
-import { collection, onSnapshot, query, where, orderBy, getDocFromServer, doc, updateDoc, increment, arrayUnion, arrayRemove, writeBatch, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, getDocFromServer, doc, updateDoc, increment, arrayUnion, arrayRemove, writeBatch, setDoc, deleteDoc, getDocs, limit, startAfter, DocumentSnapshot } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useAuth, handleFirestoreError, OperationType } from './FirebaseProvider';
 
@@ -22,7 +22,10 @@ const ALL_CATEGORIES = CATEGORY_GROUPS.flatMap(g => g.categories);
 
 export default function App() {
   const { user } = useAuth();
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
+  const [allPrompts, setAllPrompts] = useState<Prompt[]>([]);
+  const [displayedPrompts, setDisplayedPrompts] = useState<Prompt[]>([]);
+  const [batchIndex, setBatchIndex] = useState(1);
+  const BATCH_SIZE = 20;
   const [favorites, setFavorites] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -95,21 +98,52 @@ export default function App() {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log(`Fetched ${snapshot.docs.length} prompts`);
       const fetchedPrompts = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Prompt[];
-      setPrompts(fetchedPrompts);
+      setAllPrompts(fetchedPrompts);
+      setDisplayedPrompts(fetchedPrompts.slice(0, BATCH_SIZE));
       setLoading(false);
     }, (error) => {
       console.error('Error fetching prompts:', error);
       handleFirestoreError(error, OperationType.LIST, 'prompts');
-      setLoading(false); // Ensure loading is turned off even on error
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const filteredPrompts = useMemo(() => {
+    return allPrompts.filter(p => {
+      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = !selectedCategory || p.category === selectedCategory;
+      const matchesFavorites = !showFavoritesOnly || favorites.includes(p.id);
+      return matchesSearch && matchesCategory && matchesFavorites;
+    });
+  }, [allPrompts, searchQuery, selectedCategory, showFavoritesOnly, favorites]);
+
+  // Update displayed prompts when filteredPrompts change or batchIndex increases
+  useEffect(() => {
+    setDisplayedPrompts(filteredPrompts.slice(0, batchIndex * BATCH_SIZE));
+  }, [filteredPrompts, batchIndex]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && displayedPrompts.length < filteredPrompts.length) {
+        if (user || displayedPrompts.length < 50) {
+          setBatchIndex(prev => prev + 1);
+        }
+      }
+    }, { threshold: 0.1 });
+
+    const sentinel = document.getElementById('sentinel');
+    if (sentinel) observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [displayedPrompts, filteredPrompts, user]);
 
   // Fetch favorites
   useEffect(() => {
@@ -130,19 +164,9 @@ export default function App() {
   }, [user]);
 
   const uniqueCategories = useMemo(() => {
-    const cats = new Set(prompts.map(p => p.category));
+    const cats = new Set(allPrompts.map(p => p.category));
     return Array.from(cats).sort();
-  }, [prompts]);
-
-  const filteredPrompts = useMemo(() => {
-    return prompts.filter(p => {
-      const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           p.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = !selectedCategory || p.category === selectedCategory;
-      const matchesFavorites = !showFavoritesOnly || favorites.includes(p.id);
-      return matchesSearch && matchesCategory && matchesFavorites;
-    });
-  }, [prompts, searchQuery, selectedCategory, showFavoritesOnly, favorites]);
+  }, [allPrompts]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -218,17 +242,38 @@ export default function App() {
                   </div>
                 ) : (
                   <div className="prompt-grid">
-                    {filteredPrompts.map((prompt) => (
+                    {displayedPrompts.map((prompt) => (
                       <PromptCard 
                         key={prompt.id} 
                         prompt={prompt} 
                         isActive={selectedPrompt?.id === prompt.id}
                         isFavorited={favorites.includes(prompt.id)}
-                        onClick={() => setSelectedPrompt(prompt)}
+                        onClick={() => {
+                          if (!user) {
+                            setIsAuthModalOpen(true);
+                          } else {
+                            setSelectedPrompt(prompt);
+                          }
+                        }}
                       />
                     ))}
+                    <div id="sentinel" className="h-10" />
+                    {displayedPrompts.length < filteredPrompts.length && (
+                      <div className="col-span-full py-10 text-center">
+                        {!user && displayedPrompts.length >= 50 ? (
+                          <button 
+                            onClick={() => setIsAuthModalOpen(true)}
+                            className="bg-accent text-white px-6 py-3 rounded-full hover:bg-accent/90 transition-colors"
+                          >
+                            Sign in to see more prompts
+                          </button>
+                        ) : (
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
+                        )}
+                      </div>
+                    )}
                     
-                    {filteredPrompts.length === 0 && (
+                    {filteredPrompts.length === 0 && !loading && (
                       <div className="col-span-full py-20 text-center">
                         <p className="text-text-muted">No prompts found matching your criteria.</p>
                       </div>
@@ -367,7 +412,7 @@ export default function App() {
                             rating_count: Math.max(0, (prev.rating_count || 0) - 1),
                             upvoted_by: prev.upvoted_by?.filter(id => id !== user.uid) || []
                           } : null);
-                          setPrompts(prev => prev.map(p => p.id === selectedPrompt.id ? { 
+                          setAllPrompts(prev => prev.map(p => p.id === selectedPrompt.id ? { 
                             ...p, 
                             rating_count: Math.max(0, (p.rating_count || 0) - 1),
                             upvoted_by: p.upvoted_by?.filter(id => id !== user.uid) || []
@@ -384,7 +429,7 @@ export default function App() {
                             rating_count: (prev.rating_count || 0) + 1,
                             upvoted_by: [...(prev.upvoted_by || []), user.uid]
                           } : null);
-                          setPrompts(prev => prev.map(p => p.id === selectedPrompt.id ? { 
+                          setAllPrompts(prev => prev.map(p => p.id === selectedPrompt.id ? { 
                             ...p, 
                             rating_count: (p.rating_count || 0) + 1,
                             upvoted_by: [...(p.upvoted_by || []), user.uid]
