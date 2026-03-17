@@ -18,7 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ searchQuery, setSearchQuery, onA
     <nav className="topbar">
       <div className="topbar-inner">
         <div className="flex items-center gap-2">
-          <img src="gpt-logo.png" alt="Zevora Logo" className="h-8" />
+          
           <div className="brand-name compact">zevora</div>
         </div>
 
